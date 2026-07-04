@@ -36,6 +36,12 @@ repositories {
 		name "reach entity attributes"
 		url "https://maven.jamieswhiteshirt.com/libs-release"
 	}
+
+	// DataSync (required by Ratatouille)
+	maven {
+		name "uuid.gg"
+		url "https://maven.uuid.gg/releases"
+	}
 }
 
 loom {
