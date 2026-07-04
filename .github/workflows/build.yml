@@ -11,6 +11,8 @@ jobs:
         with:
           java-version: 21
           distribution: temurin
+      - name: Make gradlew executable
+        run: chmod +x gradlew
       - name: Build
         run: ./gradlew build --no-daemon
       - name: Upload JAR
