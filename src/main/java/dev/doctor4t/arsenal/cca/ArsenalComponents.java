@@ -1,22 +1,18 @@
 package dev.doctor4t.arsenal.cca;
 
 import dev.doctor4t.arsenal.Arsenal;
-import dev.doctor4t.arsenal.item.ArsenalWeaponItem;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.TridentItem;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
 import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
-import org.ladysnake.cca.api.v3.item.ItemComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.item.ItemComponentInitializer;
+import org.ladysnake.cca.api.v3.item.ItemComponentMigrationRegistry;
 
 public class ArsenalComponents implements EntityComponentInitializer, ItemComponentInitializer {
     public static final ComponentKey<BackWeaponComponent> BACK_WEAPON_COMPONENT =
         ComponentRegistry.getOrCreate(Arsenal.id("back_weapon"), BackWeaponComponent.class);
-    public static final ComponentKey<WeaponOwnerComponent> WEAPON_OWNER_COMPONENT =
-        ComponentRegistry.getOrCreate(Arsenal.id("weapon_skin"), WeaponOwnerComponent.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
@@ -25,9 +21,10 @@ public class ArsenalComponents implements EntityComponentInitializer, ItemCompon
             .end(BackWeaponComponent::new);
     }
 
+    // Required by ItemComponentInitializer in CCA 6.x
+    // Item components (WeaponOwnerComponent) now use Minecraft's CUSTOM_DATA system directly
     @Override
-    public void registerItemComponentFactories(ItemComponentFactoryRegistry registry) {
-        registry.register(item -> item instanceof ArsenalWeaponItem || item instanceof TridentItem,
-            WEAPON_OWNER_COMPONENT, WeaponOwnerComponent::new);
+    public void registerItemComponentMigrations(ItemComponentMigrationRegistry registry) {
+        // No migrations needed - we use DataComponentTypes.CUSTOM_DATA directly
     }
 }

@@ -95,9 +95,6 @@ public class ArsenalClient implements ClientModInitializer {
             }
         });
 
-        for (AnchorbladeItem.Skin value : AnchorbladeItem.Skin.values()) {
-            ModelLoadingPlugin.register(context -> context.addModels(value.anchorbladeEntityModel));
-        }
 
         // Sweep particle packet (S2C)
         ClientPlayNetworking.registerGlobalReceiver(SweepPayload.ID, (payload, context) -> {

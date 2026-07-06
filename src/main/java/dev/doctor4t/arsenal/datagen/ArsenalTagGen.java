@@ -43,7 +43,7 @@ public class ArsenalTagGen {
         @Override
         protected void configure(RegistryWrapper.WrapperLookup arg) { // TODO: Replace some of these with conventional tags
             this.getOrCreateTagBuilder(ArsenalTags.DISPLAYABLE)
-                    .addOptionalTag(ItemTags.TOOLS)
+                    
                     .addTag(ArsenalTags.BIG_WEAPONS)
                     .addTag(ArsenalTags.SHIELDS)
                     .addTag(ArsenalTags.RANGED_WEAPONS)

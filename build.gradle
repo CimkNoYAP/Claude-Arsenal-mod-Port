@@ -69,6 +69,7 @@ dependencies {
 	modIncludeImplementation "org.ladysnake.cardinal-components-api:cardinal-components-item:${project.cca_version}"
 	modIncludeImplementation "com.jamieswhiteshirt:reach-entity-attributes:${reach_entity_attributes_version}"
 	modImplementation "dev.doctor4t:ratatouille:${project.ratatouille_version}"
+	modCompileOnly "dev.upcraft.datasync:datasync-minecraft-${project.minecraft_version}-fabric:${project.datasync_version}"
 
 	// Runtime mods
 	modLocalImplementation "com.terraformersmc:modmenu:${mod_menu_version}"

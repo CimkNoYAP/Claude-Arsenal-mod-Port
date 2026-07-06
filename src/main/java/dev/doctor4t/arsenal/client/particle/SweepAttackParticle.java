@@ -8,7 +8,7 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -42,7 +42,7 @@ public class SweepAttackParticle extends SpriteBillboardParticle {
     }
 
     @Environment(EnvType.CLIENT)
-    public static class Factory implements ParticleFactory<DefaultParticleType> {
+    public static class Factory implements ParticleFactory<SimpleParticleType> {
         private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
@@ -50,7 +50,7 @@ public class SweepAttackParticle extends SpriteBillboardParticle {
         }
 
         @Override
-        public @Nullable SweepAttackParticle createParticle(DefaultParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        public @Nullable SweepAttackParticle createParticle(SimpleParticleType parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
             SweepAttackParticle instance = new SweepAttackParticle(world, x, y, z, this.spriteProvider);
             if (parameters instanceof SweepParticleType sweepParameters && sweepParameters.initialData != null) {
                 Color color = new Color(sweepParameters.initialData.color, true);

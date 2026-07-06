@@ -33,9 +33,9 @@ public class WeaponRackItem extends Item {
             AbstractDecorationEntity abstractDecorationEntity;
             abstractDecorationEntity = new WeaponRackEntity(world, blockPos2, direction);
 
-            NbtCompound nbtCompound = itemStack.getNbt();
+            var customData = itemStack.get(net.minecraft.component.DataComponentTypes.CUSTOM_DATA); NbtCompound nbtCompound = customData != null ? customData.copyNbt() : new NbtCompound();
             if (nbtCompound != null) {
-                EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, nbtCompound);
+                EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, net.minecraft.component.type.NbtComponent.of(nbtCompound));
             }
 
             if (abstractDecorationEntity.canStayAttached()) {

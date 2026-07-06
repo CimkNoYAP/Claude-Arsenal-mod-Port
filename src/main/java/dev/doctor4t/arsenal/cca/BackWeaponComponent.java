@@ -30,7 +30,9 @@ public class BackWeaponComponent implements AutoSyncedComponent {
     public void writeToNbt(@NotNull NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         ItemStack stack = this.backWeapon.getStack(0);
         if (!stack.isEmpty()) {
-            tag.put("backWeapon", stack.toNbt(registryLookup));
+            NbtCompound itemNbt = new NbtCompound();
+            stack.encode(registryLookup, itemNbt);
+            tag.put("backWeapon", itemNbt);
         }
         tag.putBoolean("holdingBackWeapon", this.holdingBackWeapon);
     }
@@ -59,13 +61,11 @@ public class BackWeaponComponent implements AutoSyncedComponent {
         return ArsenalComponents.BACK_WEAPON_COMPONENT.get(player).isHoldingBackWeapon();
     }
 
-    /** Called server-side only (from network handler) */
     public static void setHoldingBackWeaponServer(PlayerEntity player, boolean holdingBackWeapon) {
         ArsenalComponents.BACK_WEAPON_COMPONENT.get(player).holdingBackWeapon = holdingBackWeapon;
         ArsenalComponents.BACK_WEAPON_COMPONENT.sync(player);
     }
 
-    /** Called client-side — sends packet to server */
     public static void setHoldingBackWeapon(PlayerEntity player, boolean holdingBackWeapon) {
         if (player.getWorld().isClient()) {
             ClientPlayNetworking.send(new HoldWeaponPayload(holdingBackWeapon));

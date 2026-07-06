@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.doctor4t.arsenal.cca.BackWeaponComponent;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
@@ -41,9 +40,9 @@ public abstract class InGameHudMixin {
         if (!stack.isEmpty()) {
             int i = this.scaledWidth / 2;
             if (BackWeaponComponent.isHoldingBackWeapon(player)) {
-                context.drawTexture(ClickableWidget.WIDGETS_TEXTURE, i - 12, this.scaledHeight - 23 - 70, 0, 22, 24, 24);
+                context.drawTexture(Identifier.ofVanilla("textures/gui/sprites/hud/hotbar.png"), i - 12, this.scaledHeight - 23 - 70, 0, 22, 24, 24);
                 RenderSystem.enableBlend();
-                context.drawTexture(ClickableWidget.WIDGETS_TEXTURE, i - 12 + 4, this.scaledHeight - 23 - 70 + 4, 24 + 3, 22 + 4, 16, 16);
+                context.drawTexture(Identifier.ofVanilla("textures/gui/sprites/hud/hotbar.png"), i - 12 + 4, this.scaledHeight - 23 - 70 + 4, 24 + 3, 22 + 4, 16, 16);
                 RenderSystem.defaultBlendFunc();
 
                 int o = i - 90 + 4 * 20 + 2;
@@ -54,9 +53,9 @@ public abstract class InGameHudMixin {
                 Arm arm = player.getMainArm().getOpposite();
                 RenderSystem.enableBlend();
                 if (arm == Arm.RIGHT) {
-                    context.drawTexture(ClickableWidget.WIDGETS_TEXTURE, i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
+                    context.drawTexture(Identifier.ofVanilla("textures/gui/sprites/hud/hotbar.png"), i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
                 } else {
-                    context.drawTexture(ClickableWidget.WIDGETS_TEXTURE, i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
+                    context.drawTexture(Identifier.ofVanilla("textures/gui/sprites/hud/hotbar.png"), i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
                 }
                 RenderSystem.defaultBlendFunc();
 

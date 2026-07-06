@@ -28,7 +28,7 @@ public class ItemMixin {
             if (!world.isClient()) {
                 world.syncWorldEvent(null, 1018, user.getBlockPos(), 0);
                 Vec3d dir = user.getRotationVec(1.0F).normalize().multiply(2);
-                SmallFireballEntity fireball = new SmallFireballEntity(world, user, dir, stack);
+                SmallFireballEntity fireball = new SmallFireballEntity(world, user, dir);
                 fireball.setPosition(fireball.getX(), user.getEyeY(), fireball.getZ());
                 world.spawnEntity(fireball);
                 stack.decrement(1);

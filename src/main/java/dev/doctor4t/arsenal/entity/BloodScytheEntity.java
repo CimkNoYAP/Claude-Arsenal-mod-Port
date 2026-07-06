@@ -1,13 +1,14 @@
 package dev.doctor4t.arsenal.entity;
 
-import com.google.common.collect.Sets;
 import dev.doctor4t.arsenal.index.ArsenalDamageTypes;
 import dev.doctor4t.arsenal.index.ArsenalEntities;
-import dev.doctor4t.arsenal.index.ArsenalParticles;
 import dev.doctor4t.arsenal.index.ArsenalSounds;
+import dev.doctor4t.arsenal.index.ArsenalStatusEffects;
+import dev.doctor4t.arsenal.index.ArsenalItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
@@ -16,73 +17,45 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class BloodScytheEntity extends PersistentProjectileEntity {
-    private final Set<StatusEffectInstance> effects = Sets.newHashSet();
-    public int ticksUntilRemove = 5;
-    public final List<LivingEntity> hitEntities = new ArrayList<>();
+    private List<StatusEffectInstance> storedEffects = new ArrayList<>();
 
-    public BloodScytheEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
-        super(entityType, world);
+    public BloodScytheEntity(EntityType<? extends BloodScytheEntity> type, World world) {
+        super(type, world, new ItemStack(ArsenalItems.SCYTHE), new ItemStack(ArsenalItems.SCYTHE));
     }
 
     public BloodScytheEntity(World world, LivingEntity owner) {
-        super(ArsenalEntities.BLOOD_SCYTHE, owner, world);
+        super(ArsenalEntities.BLOOD_SCYTHE, owner, world, new ItemStack(ArsenalItems.SCYTHE), new ItemStack(ArsenalItems.SCYTHE));
+        this.setNoGravity(true);
     }
 
     @Override
-    protected ItemStack asItemStack() {
-        return ItemStack.EMPTY;
+    protected ItemStack getDefaultItemStack() {
+        return new ItemStack(ArsenalItems.SCYTHE);
     }
 
     public void addEffect(StatusEffectInstance effect) {
-        this.effects.add(effect);
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-
-        for (float x = -3; x <= 3; x += 0.1f) {
-            this.getWorld().addParticle(ArsenalParticles.BLOOD_BUBBLE, this.getX() + x * Math.cos(this.getYaw()), this.getY(), this.getZ() + x * Math.sin(this.getYaw()), this.getVelocity().getX(), this.getVelocity().getY(), this.getVelocity().getZ());
-        }
-
-        if (this.inGround || this.age > 20) {
-            for (int i = 0; i < 50; i++) {
-                this.getWorld().addParticle(ArsenalParticles.BLOOD_BUBBLE_SPLATTER, this.getX() + (this.random.nextGaussian() * 2) * Math.cos(this.getYaw()), this.getY(), this.getZ() + (this.random.nextGaussian() * 2) * Math.sin(this.getYaw()), this.random.nextGaussian() / 10, this.random.nextFloat() / 2, this.random.nextGaussian() / 10);
-            }
-            this.ticksUntilRemove--;
-        }
-
-        if (this.ticksUntilRemove <= 0) {
-            this.discard();
-        }
-
-        if (!this.getWorld().isClient) {
-            for (LivingEntity livingEntity : this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox(), livingEntity -> this.getOwner() != livingEntity)) {
-                if (!hitEntities.contains(livingEntity)) {
-                    livingEntity.damage(this.getWorld().getDamageSources().create(ArsenalDamageTypes.BLOOD_SCYTHE, this, this.getOwner()), 12.0f);
-                    for (StatusEffectInstance effect : this.effects) {
-                        livingEntity.addStatusEffect(effect);
-                    }
-                    hitEntities.add(livingEntity);
-                }
-            }
-        }
-    }
-
-    @Override
-    protected SoundEvent getHitSound() {
-        return ArsenalSounds.ENTITY_BLOOD_SCYTHE_HIT;
-    }
-
-    @Override
-    public boolean hasNoGravity() {
-        return true;
+        storedEffects.add(effect);
     }
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
+        if (entityHitResult.getEntity() instanceof LivingEntity living) {
+            float damage = 5.0F;
+            if (living.damage(this.getWorld().getDamageSources().create(ArsenalDamageTypes.SPEWING, this, this.getOwner()), damage)) {
+                storedEffects.forEach(effect -> living.addStatusEffect(new StatusEffectInstance(
+                    effect.getEffectType(), effect.getDuration(), effect.getAmplifier(),
+                    effect.isAmbient(), effect.shouldShowParticles(), effect.shouldShowIcon())));
+                living.addStatusEffect(new StatusEffectInstance(ArsenalStatusEffects.STUN, 20, 0, false, false, false));
+            }
+        }
+        this.playSound(ArsenalSounds.ENTITY_BLOOD_SCYTHE_HIT, 1.0F, 1.0F);
+        this.discard();
     }
+
+    @Override protected SoundEvent getHitSound() { return ArsenalSounds.ENTITY_BLOOD_SCYTHE_HIT; }
+    @Override protected ItemStack asItemStack() { return ItemStack.EMPTY; }
+    @Override public boolean shouldRender(double cx, double cy, double cz) { return true; }
+    @Override protected boolean tryPickup(PlayerEntity player) { return false; }
 }

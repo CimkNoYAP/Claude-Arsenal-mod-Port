@@ -27,7 +27,7 @@ public class GUIHeldVaryingItemRenderer implements BuiltinItemRendererRegistry.D
     private BakedModel worldWeaponModel;
 
     public GUIHeldVaryingItemRenderer(Identifier weaponId) {
-        this.id = new Identifier(weaponId.getNamespace(), weaponId.getPath() + "_renderer");
+        this.id = Identifier.of(weaponId.getNamespace(), weaponId.getPath() + "_renderer");
         this.weaponId = weaponId;
     }
 
@@ -45,8 +45,8 @@ public class GUIHeldVaryingItemRenderer implements BuiltinItemRendererRegistry.D
     public void reload(ResourceManager manager) {
         final MinecraftClient client = MinecraftClient.getInstance();
         this.itemRenderer = client.getItemRenderer();
-        this.inventoryWeaponModel = client.getBakedModelManager().getModel(new ModelIdentifier(this.weaponId.getNamespace(), this.weaponId.getPath() + "_gui", "inventory"));
-        this.worldWeaponModel = client.getBakedModelManager().getModel(new ModelIdentifier(this.weaponId.getNamespace(), this.weaponId.getPath() + "_handheld", "inventory"));
+        this.inventoryWeaponModel = client.getBakedModelManager().getModel(new ModelIdentifier(Identifier.of(this.weaponId.getNamespace(), this.weaponId.getPath() + "_gui"), "inventory"));
+        this.worldWeaponModel = client.getBakedModelManager().getModel(new ModelIdentifier(Identifier.of(this.weaponId.getNamespace(), this.weaponId.getPath() + "_handheld"), "inventory"));
     }
 
     @Override
