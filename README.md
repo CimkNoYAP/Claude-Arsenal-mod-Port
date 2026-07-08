@@ -13,6 +13,16 @@
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RUHAG4fT9CA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/s4POfzRYx3s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
+
+
+# WARNING
+## THIS IS AN UNOFFICIAL PORT OF THE ARSENAL MOD BY DOCTORRAT AND THE MAVEN TEAM. I AM NOT ASSOCIATED WITH THEM. THIS CODE IS ALSO CODED BY THE AI CLAUDE, SO DONT EXPECT UPDATES OR FIXES.
+
+
+
+
+
+
 ## Features
 ### Weapons
 - Scythe
@@ -47,24 +57,6 @@
     - If you have a cape, its visual movement will be limited by the item on your back
 - Fire charges can be thrown directly by using them
 - Drowned with tridents are guaranteed to drop them, as well as with full durability
-
-### Supporter Bonuses
-For Ko-Fi and YouTube members, you get weapon cosmetics:
-- Your selected cosmetics are visible to other players.
-- Can be changed by sneak-right-clicking an Arsenal weapon on either an anvil or smithing table
-- Cosmetics are set per item stack name, not individual item stack, meaning they are synchronized across worlds.
-    - For example, if you have a Scythe named "Bingle" with a Guilded skin, any Scythe named "Bingle" you pick up or display in any world will have the Guilded skin (and change if you select another skin for it).
-    - This also means that if you change the skin of a weapon with no name, you will be changing the default skin you are seen with for that weapon, meaning you will not have to visit an anvil / smithing table to get that skin the moment you pick up any unnamed weapon of that type.
-    - As a result, if you give a skinned weapon to a non-supporter, the cosmetics will not show for them, but will show for you the moment you get it back.
-- Each weapon skin comes with its own custom colored hits (as well as chain for the Anchorblades)
-
-### Compatibility
-If you want your weapon mod to be compatible and have your items display properly on weapon racks and back slots, Arsenal provides some tags to which you can add them:
-- "displayable": What items can be displayed in a weapon rack. By default, contains the "tools" Vanilla tag and "big_weapons", "tridents", "shields" and "ranged_weapons" Arsenal tags.
-- "big_weapons": Weapons that have a 32x32 handheld sprite and therefore should be displayed scaled up. By default, contains the Scythe and Anchorblade.
-- "tridents": Tridents. By default, contains the Minecraft Trident item.
-- "shields": Shields. By default, contains the Minecraft Shield item.
-- "ranged_weapons": Ranged weapons. By default, contains the Minecraft Bow and Crossbow items.
 
 ## Gallery
 ![An Anchorblade in the back slot of a player holding a Scythe](https://cdn.modrinth.com/data/SQhWMwht/images/3d0779885e1c8cd87fdd62b4f736db4aa72d0726.png)
