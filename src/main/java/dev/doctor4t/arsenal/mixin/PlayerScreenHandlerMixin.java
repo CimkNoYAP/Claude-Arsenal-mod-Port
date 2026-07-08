@@ -4,7 +4,7 @@ import dev.doctor4t.arsenal.cca.BackWeaponComponent;
 import dev.doctor4t.arsenal.util.BackSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
 
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerScreenHandler.class)
-public abstract class PlayerScreenHandlerMixin extends AbstractRecipeScreenHandler<CraftingInventory, CraftingRecipe> {
+public abstract class PlayerScreenHandlerMixin extends AbstractRecipeScreenHandler<CraftingRecipeInput, CraftingRecipe> {
     public PlayerScreenHandlerMixin(ScreenHandlerType<?> screenHandlerType, int i) {
         super(screenHandlerType, i);
     }

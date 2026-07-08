@@ -25,14 +25,16 @@ public class AnchorbladeEntity extends PersistentProjectileEntity {
     public int returnTimer;
 
     public AnchorbladeEntity(EntityType<? extends AnchorbladeEntity> type, World world) {
-        super(type, world, new ItemStack(ArsenalItems.ANCHORBLADE), new ItemStack(ArsenalItems.ANCHORBLADE));
+        super(type, world);
     }
 
     public AnchorbladeEntity(World world, LivingEntity owner, ItemStack stack) {
-        super(ArsenalEntities.ANCHORBLADE, owner, world, stack.copy(), stack.copy());
+        super(ArsenalEntities.ANCHORBLADE, owner, world, stack.copy(), ItemStack.EMPTY);
         this.setNoGravity(true);
         this.setReeling(ArsenalEnchantments.getLevel(world, ArsenalEnchantments.REELING, stack) > 0);
     }
+
+    public ItemStack getStack() { return this.asItemStack().isEmpty() ? new ItemStack(net.minecraft.item.Items.ENDER_EYE) : this.asItemStack(); }
 
     @Override
     protected ItemStack getDefaultItemStack() {

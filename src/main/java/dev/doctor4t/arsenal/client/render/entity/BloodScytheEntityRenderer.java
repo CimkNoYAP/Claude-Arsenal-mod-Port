@@ -15,7 +15,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class BloodScytheEntityRenderer<T extends BloodScytheEntity> extends EntityRenderer<T> {
-    public static final Identifier TEXTURE = new Identifier(Arsenal.MOD_ID, "textures/entity/blood_scythe.png");
+    public static final Identifier TEXTURE = Identifier.of(Arsenal.MOD_ID, "textures/entity/blood_scythe.png");
 
     public BloodScytheEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
@@ -42,7 +42,7 @@ public class BloodScytheEntityRenderer<T extends BloodScytheEntity> extends Enti
     }
 
     public void vertex(Matrix4f positionMatrix, Matrix3f normalMatrix, VertexConsumer vertexConsumer, int x, int y, int z, float u, float v, int normalX, int normalZ, int normalY, int light) {
-        vertexConsumer.vertex(positionMatrix, x, y, z).color(255, 255, 255, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normalMatrix, normalX, normalY, normalZ).next();
+        vertexConsumer.vertex(positionMatrix, x, y, z).color(255, 255, 255, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrices.peek(), normalX, normalY, normalZ);
     }
 }
 

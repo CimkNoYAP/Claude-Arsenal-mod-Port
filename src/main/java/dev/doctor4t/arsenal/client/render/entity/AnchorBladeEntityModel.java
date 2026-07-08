@@ -39,8 +39,8 @@ public class AnchorBladeEntityModel extends EntityModel<AnchorbladeEntity> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        this.bone.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+        this.bone.render(matrices, vertexConsumer, light, overlay, color);
     }
 
     public Vector3f getAttachmentPosition() {

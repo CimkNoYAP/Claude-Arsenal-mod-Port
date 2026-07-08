@@ -103,7 +103,7 @@ public class AnchorbladeEntityRenderer extends EntityRenderer<AnchorbladeEntity>
     }
 
     private void vertex(Vec3d vec, VertexConsumer vertexConsumer, float u, float v, Matrix4f modelMatrix, Matrix3f normal, int light) {
-        vertexConsumer.vertex(modelMatrix, (float) vec.x, (float) vec.y, (float) vec.z).color(255, 255, 255, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normal, 0, 1, 0).next();
+        vertexConsumer.vertex(modelMatrix, (float) vec.x, (float) vec.y, (float) vec.z).color(255, 255, 255, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(matrices.peek(), 0, 1, 0);
     }
 
     @Override

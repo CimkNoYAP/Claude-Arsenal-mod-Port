@@ -41,7 +41,7 @@ public class ItemMixin {
     @Inject(method = "inventoryTick", at = @At("HEAD"))
     private void arsenal$setTridentOwner(ItemStack stack, World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
         if (stack.isOf(Items.TRIDENT) && entity instanceof PlayerEntity player) {
-            WeaponOwnerComponent weaponOwnerComponent = ArsenalComponents.WEAPON_OWNER_COMPONENT.get(stack);
+            WeaponOwnerComponent weaponOwnerComponent = new WeaponOwnerComponent(stack);
             weaponOwnerComponent.setOwner(player.getUuid());
         }
     }

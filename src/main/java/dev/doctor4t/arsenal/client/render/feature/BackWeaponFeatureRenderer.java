@@ -32,7 +32,7 @@ public class BackWeaponFeatureRenderer extends FeatureRenderer<AbstractClientPla
 
         matrices.push();
 
-        boolean hasCape = abstractClientPlayerEntity.canRenderCapeTexture() && abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE) && abstractClientPlayerEntity.getCapeTexture() != null && !abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST).isOf(Items.ELYTRA);
+        boolean hasCape = abstractClientPlayerEntity.getSkinTextures().capeTexture() != null && abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE) && !abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST).isOf(Items.ELYTRA);
         boolean hasChestPlate = !abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST).isEmpty();
         matrices.translate(0.0F, 0.0F, 0.05F + (hasCape ? 0.05f : 0f) + (hasChestPlate ? .05f : 0f));
         double d = MathHelper.lerp(tickDelta, abstractClientPlayerEntity.prevCapeX, abstractClientPlayerEntity.capeX)

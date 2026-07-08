@@ -22,11 +22,11 @@ public class BloodScytheEntity extends PersistentProjectileEntity {
     private List<StatusEffectInstance> storedEffects = new ArrayList<>();
 
     public BloodScytheEntity(EntityType<? extends BloodScytheEntity> type, World world) {
-        super(type, world, new ItemStack(ArsenalItems.SCYTHE), new ItemStack(ArsenalItems.SCYTHE));
+        super(type, world);
     }
 
     public BloodScytheEntity(World world, LivingEntity owner) {
-        super(ArsenalEntities.BLOOD_SCYTHE, owner, world, new ItemStack(ArsenalItems.SCYTHE), new ItemStack(ArsenalItems.SCYTHE));
+        super(ArsenalEntities.BLOOD_SCYTHE, owner, world, new ItemStack(ArsenalItems.SCYTHE), ItemStack.EMPTY);
         this.setNoGravity(true);
     }
 

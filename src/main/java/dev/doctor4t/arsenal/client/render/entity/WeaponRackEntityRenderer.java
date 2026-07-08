@@ -25,7 +25,7 @@ import net.minecraft.util.math.*;
 
 @Environment(EnvType.CLIENT)
 public class WeaponRackEntityRenderer<T extends WeaponRackEntity> extends EntityRenderer<T> {
-    public static final ModelIdentifier MODEL = new ModelIdentifier(Arsenal.MOD_ID, "weapon_rack", "");
+    public static final ModelIdentifier MODEL = new ModelIdentifier(Identifier.of(Arsenal.MOD_ID, "weapon_rack"), "inventory");
     private final ItemRenderer itemRenderer;
     private final BlockRenderManager blockRenderManager;
 

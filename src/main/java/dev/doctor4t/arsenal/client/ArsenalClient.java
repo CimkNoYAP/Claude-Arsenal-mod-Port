@@ -1,4 +1,5 @@
 package dev.doctor4t.arsenal.client;
+import net.minecraft.util.Identifier;
 
 import dev.doctor4t.arsenal.Arsenal;
 import dev.doctor4t.arsenal.cca.BackWeaponComponent;
@@ -64,11 +65,11 @@ public class ArsenalClient implements ClientModInitializer {
             BuiltinItemRendererRegistry.INSTANCE.register(Items.TRIDENT, new TridentDynamicItemRenderer());
 
         // Force-load weapon models
-        ModelLoadingPlugin.register(ctx -> ctx.addModels(ScytheDynamicItemRenderer.MODELS_TO_REGISTER));
-        ModelLoadingPlugin.register(ctx -> ctx.addModels(AnchorbladeDynamicItemRenderer.MODELS_TO_REGISTER));
+        ModelLoadingPlugin.register(ctx -> ScytheDynamicItemRenderer.MODELS_TO_REGISTER.forEach(m -> ctx.addModels(m.id())));
+        ModelLoadingPlugin.register(ctx -> AnchorbladeDynamicItemRenderer.MODELS_TO_REGISTER.forEach(m -> ctx.addModels(m.id())));
         if (ArsenalConfig.CUSTOM_TRIDENT_RENDERING)
-            ModelLoadingPlugin.register(ctx -> ctx.addModels(TridentDynamicItemRenderer.MODELS_TO_REGISTER));
-        ModelLoadingPlugin.register(ctx -> ctx.addModels(WeaponRackEntityRenderer.MODEL));
+            ModelLoadingPlugin.register(ctx -> TridentDynamicItemRenderer.MODELS_TO_REGISTER.forEach(m -> ctx.addModels(m.id())));
+        ModelLoadingPlugin.register(ctx -> ctx.addModels(WeaponRackEntityRenderer.MODEL.id()));
 
         ModEntityModelLayers.initialize();
 

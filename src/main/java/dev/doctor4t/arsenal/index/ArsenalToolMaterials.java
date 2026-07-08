@@ -1,8 +1,11 @@
 package dev.doctor4t.arsenal.index;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.Items;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Lazy;
 
 import java.util.function.Supplier;
@@ -30,4 +33,6 @@ public enum ArsenalToolMaterials implements ToolMaterial {
     @Override public float getAttackDamage() { return attackDamage; }
     @Override public int getEnchantability() { return enchantability; }
     @Override public Ingredient getRepairIngredient() { return repairIngredient.get(); }
+    // Blocks this tool cannot mine drops from — netherite tier (almost nothing)
+    @Override public TagKey<Block> getInverseTag() { return BlockTags.INCORRECT_FOR_NETHERITE_TOOL; }
 }
