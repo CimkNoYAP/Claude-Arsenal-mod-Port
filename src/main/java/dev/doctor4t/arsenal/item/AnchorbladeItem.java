@@ -1,11 +1,12 @@
 package dev.doctor4t.arsenal.item;
 
+import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import dev.doctor4t.arsenal.cca.WeaponOwnerComponent;
-import dev.doctor4t.arsenal.entity.AnchorbladeEntity;
+import dev.doctor4t.arsenal.entity.BloodScytheEntity;
 import dev.doctor4t.arsenal.index.ArsenalCosmetics;
+import dev.doctor4t.arsenal.index.ArsenalDamageTypes;
 import dev.doctor4t.arsenal.index.ArsenalEnchantments;
 import dev.doctor4t.arsenal.index.ArsenalSounds;
-import dev.doctor4t.arsenal.util.AnchorOwner;
 import dev.doctor4t.arsenal.util.SweepParticleUtil;
 import dev.doctor4t.ratatouille.item.CustomHitParticleItem;
 import dev.doctor4t.ratatouille.item.CustomHitSoundItem;
@@ -13,80 +14,89 @@ import dev.doctor4t.ratatouille.util.TextUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.EquipmentSlotGroup;
+import net.minecraft.entity.attribute.AttributeModifierSlot;
+import net.minecraft.item.ItemAttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
-public class AnchorbladeItem extends MiningToolItem implements CustomHitParticleItem, CustomHitSoundItem, ArsenalWeaponItem {
-    public AnchorbladeItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
-        super(material, BlockTags.PICKAXE_MINEABLE,
+public class ScytheItem extends MiningToolItem implements CustomHitParticleItem, CustomHitSoundItem, ArsenalWeaponItem {
+
+    public ScytheItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
+        super(material, BlockTags.HOE_MINEABLE,
             settings.attributeModifiers(
                 ItemAttributeModifiersComponent.builder()
                     .add(EntityAttributes.GENERIC_ATTACK_DAMAGE,
-                        new EntityAttributeModifier(Identifier.of("arsenal","base_attack_damage"),
+                        new EntityAttributeModifier(Identifier.of("arsenal", "base_attack_damage"),
                             attackDamage + material.getAttackDamage(), EntityAttributeModifier.Operation.ADD_VALUE),
-                        EquipmentSlotGroup.MAINHAND)
+                        AttributeModifierSlot.MAINHAND)
                     .add(EntityAttributes.GENERIC_ATTACK_SPEED,
-                        new EntityAttributeModifier(Identifier.of("arsenal","base_attack_speed"),
+                        new EntityAttributeModifier(Identifier.of("arsenal", "base_attack_speed"),
                             attackSpeed, EntityAttributeModifier.Operation.ADD_VALUE),
-                        EquipmentSlotGroup.MAINHAND)
+                        AttributeModifierSlot.MAINHAND)
+                    .add(ReachEntityAttributes.ATTACK_RANGE,
+                        new EntityAttributeModifier(Identifier.of("arsenal", "scythe_attack_range"),
+                            0.5, EntityAttributeModifier.Operation.ADD_VALUE),
+                        AttributeModifierSlot.MAINHAND)
                     .build()));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        if (user instanceof AnchorOwner owner) {
-            boolean reeling = ArsenalEnchantments.getLevel(world, ArsenalEnchantments.REELING, stack) > 0;
-            if (owner.arsenal$isAnchorActive(hand, reeling)) {
-                owner.arsenal$getAnchor(hand, reeling).setRecalled(
-                    user.getStackInHand(hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND).isEmpty());
-                return TypedActionResult.fail(stack);
-            }
-            int riptide = ArsenalEnchantments.getLevel(world, Enchantments.RIPTIDE, stack);
-            if (riptide <= 0 || user.isTouchingWaterOrRain()) {
-                if (!world.isClient) {
-                    stack.damage(1, user, hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-                    if (riptide == 0) {
-                        AnchorbladeEntity anchor = new AnchorbladeEntity(world, user, stack);
-                        anchor.setVelocity(user, user.getPitch(), user.getYaw(), 0f, 2.5f, 1f);
-                        owner.arsenal$setAnchor(hand, anchor);
-                        world.spawnEntity(anchor);
-                        world.playSoundFromEntity(null, anchor, ArsenalSounds.ITEM_ANCHORBLADE_THROW, SoundCategory.PLAYERS, 1f, 1f);
-                        return TypedActionResult.success(stack);
-                    }
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (ArsenalEnchantments.getEquipmentLevel(world, ArsenalEnchantments.SPEWING, player) > 0) {
+            if (!world.isClient) {
+                BloodScytheEntity bloodScythe = new BloodScytheEntity(world, player);
+                bloodScythe.setOwner(player);
+                bloodScythe.setVelocity(player, player.getPitch(), player.getYaw(), 0.0f, 3.0f, 1.0f);
+                player.getStackInHand(hand).damage(1, player, EquipmentSlot.MAINHAND);
+                bloodScythe.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                ArrayList<StatusEffectInstance> halved = new ArrayList<>();
+                float abs = player.getAbsorptionAmount();
+                for (StatusEffectInstance e : player.getStatusEffects())
+                    halved.add(new StatusEffectInstance(e.getEffectType(), e.getDuration()/2, e.getAmplifier(), e.isAmbient(), e.shouldShowParticles(), e.shouldShowIcon()));
+                player.clearStatusEffects();
+                halved.forEach(e -> { bloodScythe.addEffect(e); player.addStatusEffect(e); });
+                player.setAbsorptionAmount(abs);
+                player.damage(world.getDamageSources().create(ArsenalDamageTypes.SPEWING), 3f);
+                player.getItemCooldownManager().set(this, 20);
+                world.spawnEntity(bloodScythe);
+                if (world instanceof ServerWorld sw) {
+                    Skin skin = Skin.fromString(ArsenalCosmetics.getSkin(player.getMainHandStack()));
+                    if (skin == null) skin = Skin.DEFAULT;
+                    SweepParticleUtil.sendSweepPacketToClient(sw, new Pair<>(skin.color, skin.shadowColor),
+                        player.getX() - MathHelper.sin((float)(player.getYaw()*(Math.PI/180F))),
+                        player.getBodyY(0.5), player.getZ() + MathHelper.cos((float)(player.getYaw()*(Math.PI/180F))));
                 }
-                user.incrementStat(Stats.USED.getOrCreateStat(this));
             }
+            world.playSound(null, player.getX(), player.getY(), player.getZ(), ArsenalSounds.ITEM_SCYTHE_SPEWING, net.minecraft.sound.SoundCategory.PLAYERS, 1f, 1f);
+            return TypedActionResult.success(player.getStackInHand(hand));
         }
-        return TypedActionResult.success(user.getStackInHand(hand));
+        return super.use(world, player, hand);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         Skin skin = Skin.fromString(ArsenalCosmetics.getSkin(stack));
         if (skin != null && skin != Skin.DEFAULT) {
             tooltip.accept(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
-                .styled(s -> s.withColor(skin.firstColor)));
+                .styled(s -> s.withColor(skin.color)));
             if (skin.lore != null) {
                 if (Screen.hasShiftDown()) {
                     for (String line : Text.translatable(skin.lore).getString().split("\n"))
@@ -103,13 +113,13 @@ public class AnchorbladeItem extends MiningToolItem implements CustomHitParticle
         if (player.getWorld() instanceof ServerWorld sw) {
             Skin skin = Skin.fromString(ArsenalCosmetics.getSkin(player.getMainHandStack()));
             if (skin == null) skin = Skin.DEFAULT;
-            SweepParticleUtil.sendSweepPacketToClient(sw, new Pair<>(skin.firstColor, skin.lastColor),
+            SweepParticleUtil.sendSweepPacketToClient(sw, new Pair<>(skin.color, skin.shadowColor),
                 player.getX() - MathHelper.sin((float)(player.getYaw()*(Math.PI/180F))),
                 player.getBodyY(0.5), player.getZ() + MathHelper.cos((float)(player.getYaw()*(Math.PI/180F))));
         }
     }
     @Override public void playHitSound(PlayerEntity player) {
-        player.playSound(ArsenalSounds.ITEM_ANCHORBLADE_HIT, 1f, (float)(1f+player.getRandom().nextGaussian()/10f));
+        player.playSound(ArsenalSounds.ITEM_SCYTHE_HIT, 1f, (float)(1f + player.getRandom().nextGaussian()/10f));
     }
     @Override public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) { return !miner.isCreative(); }
     @Override public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
@@ -124,11 +134,11 @@ public class AnchorbladeItem extends MiningToolItem implements CustomHitParticle
                 Skin cur = Skin.fromString(ArsenalCosmetics.getSkin(ctx.getStack()));
                 if (cur == null) cur = Skin.DEFAULT;
                 ArsenalCosmetics.setSkin(new WeaponOwnerComponent(user.getStackInHand(ctx.getHand())).getOwner(), ctx.getStack(), Skin.getNext(cur).getName());
-                user.playSound(SoundEvents.BLOCK_SMITHING_TABLE_USE, 0.5f, 1f);
+                user.playSound(net.minecraft.sound.SoundEvents.BLOCK_SMITHING_TABLE_USE, 0.5f, 1f);
                 return ActionResult.SUCCESS;
             } else {
                 user.sendMessage(Text.translatable("tooltip.supporter_only").styled(s -> s.withColor(0xCC0000)));
-                user.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.5f, 1f);
+                user.playSound(net.minecraft.sound.SoundEvents.ITEM_SHIELD_BREAK, 0.5f, 1f);
                 return ActionResult.FAIL;
             }
         }
@@ -136,30 +146,16 @@ public class AnchorbladeItem extends MiningToolItem implements CustomHitParticle
     }
 
     public enum Skin {
-        DEFAULT(0xFF7E7E7E, 0xFF505050, null, null,
-            Identifier.of("arsenal", "textures/entity/anchorblade_default_chain.png")),
-        TITAN(0xFF708090, 0xFF465060, "Titan-class", null,
-            Identifier.of("arsenal", "textures/entity/anchorblade_titan_chain.png")),
-        VOID(0xFF191970, 0xFF0D0D40, null, "tooltip.arsenal.anchorblade_void",
-            Identifier.of("arsenal", "textures/entity/anchorblade_void_chain.png")),
-        LUXINTRUS(0xFF4B0082, 0xFF2D004D, "Luxintrus", null,
-            Identifier.of("arsenal", "textures/entity/anchorblade_luxintrus_chain.png")),
-        CARRION(0xFFE9DFB8, 0xFF9D806E, null, null,
-            Identifier.of("arsenal", "textures/entity/anchorblade_carrion_chain.png")),
-        GILDED(0xFFF1BC5A, 0xFFE28634, null, null,
-            Identifier.of("arsenal", "textures/entity/anchorblade_gilded_chain.png")),
-        WINSWEEP(0xFF00BFFF, 0xFF0080AA, "Winsweep", null,
-            Identifier.of("arsenal", "textures/entity/anchorblade_winsweep_chain.png")),
-        AMBESSA(0xFFB8860B, 0xFF7A5900, "Ambessa", null,
-            Identifier.of("arsenal", "textures/entity/anchorblade_ambessa_chain.png"));
-
-        public final int firstColor, lastColor;
+        DEFAULT(0xFFD9D9D9, 0xFF7F8885, null, null),
+        CLOWN(0xFFD90420, 0xFF8C0420, null, "tooltip.arsenal.scythe_clown"),
+        CARRION(0xFFE9DFB8, 0xFF9D806E, null, null),
+        GILDED(0xFFF1BC5A, 0xFFE28634, null, null),
+        ROZE(0xFFB70066, 0xFF710949, null, null),
+        FOLLY(0xFFFF005A, 0xFFBC0045, "Folly Tree Branch", null),
+        SCISSORS(0xFFB9B1AF, 0xFF6F686F, null, null);
+        public final int color, shadowColor;
         public final @org.jetbrains.annotations.Nullable String lore, tooltipName;
-        public final Identifier chainTexture;
-
-        Skin(int fc, int lc, @org.jetbrains.annotations.Nullable String tn, @org.jetbrains.annotations.Nullable String l, Identifier chainTex) {
-            firstColor=fc; lastColor=lc; tooltipName=tn; lore=l; chainTexture=chainTex;
-        }
+        Skin(int c, int sc, @org.jetbrains.annotations.Nullable String tn, @org.jetbrains.annotations.Nullable String l) { color=c;shadowColor=sc;tooltipName=tn;lore=l; }
         public String getName() { return name().toLowerCase(Locale.ROOT); }
         public static @org.jetbrains.annotations.Nullable Skin fromString(String n) { for(Skin s:values()) if(s.getName().equalsIgnoreCase(n)) return s; return null; }
         public static Skin getNext(Skin s) { Skin[] v=values(); return v[(s.ordinal()+1)%v.length]; }
