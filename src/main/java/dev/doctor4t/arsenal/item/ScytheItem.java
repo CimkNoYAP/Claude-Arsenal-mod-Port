@@ -16,7 +16,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.EquipmentSlotGroup;
+import net.minecraft.entity.attribute.AttributeModifierSlot;
+import net.minecraft.item.ItemAttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -35,7 +36,6 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 public class ScytheItem extends MiningToolItem implements CustomHitParticleItem, CustomHitSoundItem, ArsenalWeaponItem {
 
@@ -46,15 +46,15 @@ public class ScytheItem extends MiningToolItem implements CustomHitParticleItem,
                     .add(EntityAttributes.GENERIC_ATTACK_DAMAGE,
                         new EntityAttributeModifier(Identifier.of("arsenal", "base_attack_damage"),
                             attackDamage + material.getAttackDamage(), EntityAttributeModifier.Operation.ADD_VALUE),
-                        EquipmentSlotGroup.MAINHAND)
+                        AttributeModifierSlot.MAINHAND)
                     .add(EntityAttributes.GENERIC_ATTACK_SPEED,
                         new EntityAttributeModifier(Identifier.of("arsenal", "base_attack_speed"),
                             attackSpeed, EntityAttributeModifier.Operation.ADD_VALUE),
-                        EquipmentSlotGroup.MAINHAND)
+                        AttributeModifierSlot.MAINHAND)
                     .add(ReachEntityAttributes.ATTACK_RANGE,
                         new EntityAttributeModifier(Identifier.of("arsenal", "scythe_attack_range"),
                             0.5, EntityAttributeModifier.Operation.ADD_VALUE),
-                        EquipmentSlotGroup.MAINHAND)
+                        AttributeModifierSlot.MAINHAND)
                     .build()));
     }
 
@@ -92,7 +92,7 @@ public class ScytheItem extends MiningToolItem implements CustomHitParticleItem,
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         Skin skin = Skin.fromString(ArsenalCosmetics.getSkin(stack));
         if (skin != null && skin != Skin.DEFAULT) {
             tooltip.accept(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
@@ -160,4 +160,5 @@ public class ScytheItem extends MiningToolItem implements CustomHitParticleItem,
         public static @org.jetbrains.annotations.Nullable Skin fromString(String n) { for(Skin s:values()) if(s.getName().equalsIgnoreCase(n)) return s; return null; }
         public static Skin getNext(Skin s) { Skin[] v=values(); return v[(s.ordinal()+1)%v.length]; }
     }
+}
 }
