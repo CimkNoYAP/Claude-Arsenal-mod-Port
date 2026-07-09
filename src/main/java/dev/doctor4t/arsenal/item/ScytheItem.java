@@ -16,8 +16,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.AttributeModifierSlot;
-import net.minecraft.item.ItemAttributeModifiersComponent;
+import net.minecraft.entity.EquipmentSlotGroup;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -42,19 +42,19 @@ public class ScytheItem extends MiningToolItem implements CustomHitParticleItem,
     public ScytheItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
         super(material, BlockTags.HOE_MINEABLE,
             settings.attributeModifiers(
-                ItemAttributeModifiersComponent.builder()
+                AttributeModifiersComponent.builder()
                     .add(EntityAttributes.GENERIC_ATTACK_DAMAGE,
                         new EntityAttributeModifier(Identifier.of("arsenal", "base_attack_damage"),
                             attackDamage + material.getAttackDamage(), EntityAttributeModifier.Operation.ADD_VALUE),
-                        AttributeModifierSlot.MAINHAND)
+                        EquipmentSlotGroup.MAINHAND)
                     .add(EntityAttributes.GENERIC_ATTACK_SPEED,
                         new EntityAttributeModifier(Identifier.of("arsenal", "base_attack_speed"),
                             attackSpeed, EntityAttributeModifier.Operation.ADD_VALUE),
-                        AttributeModifierSlot.MAINHAND)
+                        EquipmentSlotGroup.MAINHAND)
                     .add(ReachEntityAttributes.ATTACK_RANGE,
                         new EntityAttributeModifier(Identifier.of("arsenal", "scythe_attack_range"),
                             0.5, EntityAttributeModifier.Operation.ADD_VALUE),
-                        AttributeModifierSlot.MAINHAND)
+                        EquipmentSlotGroup.MAINHAND)
                     .build()));
     }
 
@@ -95,14 +95,14 @@ public class ScytheItem extends MiningToolItem implements CustomHitParticleItem,
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         Skin skin = Skin.fromString(ArsenalCosmetics.getSkin(stack));
         if (skin != null && skin != Skin.DEFAULT) {
-            tooltip.accept(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
+            tooltip.add(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
                 .styled(s -> s.withColor(skin.color)));
             if (skin.lore != null) {
                 if (Screen.hasShiftDown()) {
                     for (String line : Text.translatable(skin.lore).getString().split("\n"))
-                        tooltip.accept(Text.literal(line).styled(s -> s.withColor(Formatting.DARK_GRAY)));
+                        tooltip.add(Text.literal(line).styled(s -> s.withColor(Formatting.DARK_GRAY)));
                 } else {
-                    tooltip.accept(Text.translatable("tooltip.arsenal.hidden").styled(s -> s.withColor(Formatting.DARK_GRAY)));
+                    tooltip.add(Text.translatable("tooltip.arsenal.hidden").styled(s -> s.withColor(Formatting.DARK_GRAY)));
                 }
             }
         }
