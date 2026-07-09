@@ -161,4 +161,3 @@ public class ScytheItem extends MiningToolItem implements CustomHitParticleItem,
         public static Skin getNext(Skin s) { Skin[] v=values(); return v[(s.ordinal()+1)%v.length]; }
     }
 }
-}
