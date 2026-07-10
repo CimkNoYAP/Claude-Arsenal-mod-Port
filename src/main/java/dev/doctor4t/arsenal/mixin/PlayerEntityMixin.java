@@ -1,7 +1,6 @@
 package dev.doctor4t.arsenal.mixin;
 
 import dev.doctor4t.arsenal.entity.AnchorbladeEntity;
-import dev.doctor4t.arsenal.index.ArsenalEnchantments;
 import dev.doctor4t.arsenal.index.ArsenalStatusEffects;
 import dev.doctor4t.arsenal.item.AnchorbladeItem;
 import dev.doctor4t.arsenal.item.ScytheItem;
@@ -16,11 +15,11 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ShieldItem;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -40,10 +39,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements AnchorOw
         super(entityType, world);
     }
 
-    @Shadow public abstract float getAttackCooldownProgress(float baseTime);
-    @Shadow public abstract void disableShield(boolean sprinting);
-
-    // 1.21 changed initDataTracker to take a DataTracker.Builder
     @Inject(method = "initDataTracker", at = @At("TAIL"))
     private void arsenal$initDataTracker(DataTracker.Builder builder, CallbackInfo ci) {
         builder.add(BASIC_ANCHOR_MAIN,   -1);
@@ -74,8 +69,17 @@ public abstract class PlayerEntityMixin extends LivingEntity implements AnchorOw
 
     @Inject(method = "takeShieldHit", at = @At("HEAD"))
     protected void arsenal$scytheDisableShield(LivingEntity attacker, CallbackInfo ci) {
+        // In 1.21.1, disable shield by giving it a cooldown directly
         if (attacker.getMainHandStack().getItem() instanceof ScytheItem) {
-            this.disableShield(true);
+            PlayerEntity self = (PlayerEntity)(Object)this;
+            // Apply cooldown to whichever hand holds the shield
+            for (Hand hand : Hand.values()) {
+                if (self.getStackInHand(hand).getItem() instanceof ShieldItem) {
+                    self.getItemCooldownManager().set(self.getStackInHand(hand).getItem(), 100);
+                    self.clearActiveItem();
+                    break;
+                }
+            }
         }
     }
 
