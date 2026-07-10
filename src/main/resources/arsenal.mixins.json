@@ -6,7 +6,6 @@
   "mixins": [
     "DrownedEntityMixin",
     "ItemMixin",
-    "LivingEntityMixin",
     "MobEntityMixin",
     "PlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
