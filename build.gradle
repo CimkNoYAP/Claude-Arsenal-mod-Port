@@ -76,8 +76,11 @@ dependencies {
 	modLocalImplementation "dev.emi:trinkets:${trinkets_version}"
 }
 
-processResources {
+tasks.withType(AbstractArchiveTask).configureEach {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+processResources {
 	inputs.property "version", project.version
 
 	filesMatching("fabric.mod.json") {
