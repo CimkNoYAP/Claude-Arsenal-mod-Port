@@ -14,7 +14,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
       - name: Build
-        run: ./gradlew build -x sourcesJar --no-daemon
+        run: ./gradlew build -x sourcesJar -x remapSourcesJar --no-daemon
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
