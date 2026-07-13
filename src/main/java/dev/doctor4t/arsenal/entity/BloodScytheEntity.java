@@ -2,9 +2,9 @@ package dev.doctor4t.arsenal.entity;
 
 import dev.doctor4t.arsenal.index.ArsenalDamageTypes;
 import dev.doctor4t.arsenal.index.ArsenalEntities;
+import dev.doctor4t.arsenal.index.ArsenalItems;
 import dev.doctor4t.arsenal.index.ArsenalSounds;
 import dev.doctor4t.arsenal.index.ArsenalStatusEffects;
-import dev.doctor4t.arsenal.index.ArsenalItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -26,7 +26,8 @@ public class BloodScytheEntity extends PersistentProjectileEntity {
     }
 
     public BloodScytheEntity(World world, LivingEntity owner) {
-        super(ArsenalEntities.BLOOD_SCYTHE, owner, world, new ItemStack(ArsenalItems.SCYTHE), ItemStack.EMPTY);
+        // weapon must be EMPTY or RangedWeaponItem/TridentItem — pass EMPTY, projectile = scythe
+        super(ArsenalEntities.BLOOD_SCYTHE, owner, world, ItemStack.EMPTY, new ItemStack(ArsenalItems.SCYTHE));
         this.setNoGravity(true);
     }
 
@@ -55,7 +56,6 @@ public class BloodScytheEntity extends PersistentProjectileEntity {
     }
 
     @Override protected SoundEvent getHitSound() { return ArsenalSounds.ENTITY_BLOOD_SCYTHE_HIT; }
-    @Override protected ItemStack asItemStack() { return ItemStack.EMPTY; }
     @Override public boolean shouldRender(double cx, double cy, double cz) { return true; }
     @Override protected boolean tryPickup(PlayerEntity player) { return false; }
 }
