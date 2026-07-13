@@ -1,7 +1,6 @@
 package dev.doctor4t.arsenal.entity;
 
 import dev.doctor4t.arsenal.index.*;
-import dev.doctor4t.arsenal.index.ArsenalItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -12,7 +11,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
@@ -29,16 +27,20 @@ public class AnchorbladeEntity extends PersistentProjectileEntity {
     }
 
     public AnchorbladeEntity(World world, LivingEntity owner, ItemStack stack) {
-        super(ArsenalEntities.ANCHORBLADE, owner, world, stack.copy(), ItemStack.EMPTY);
+        // weapon must be EMPTY or RangedWeaponItem/TridentItem — pass EMPTY, projectile = stack
+        super(ArsenalEntities.ANCHORBLADE, owner, world, ItemStack.EMPTY, stack.copy());
         this.setNoGravity(true);
         this.setReeling(ArsenalEnchantments.getLevel(world, ArsenalEnchantments.REELING, stack) > 0);
     }
 
-    public ItemStack getStack() { return this.asItemStack().isEmpty() ? new ItemStack(net.minecraft.item.Items.ENDER_EYE) : this.asItemStack(); }
-
     @Override
     protected ItemStack getDefaultItemStack() {
         return new ItemStack(ArsenalItems.ANCHORBLADE);
+    }
+
+    public ItemStack getStack() {
+        ItemStack s = this.asItemStack();
+        return s.isEmpty() ? new ItemStack(ArsenalItems.ANCHORBLADE) : s;
     }
 
     @Override
