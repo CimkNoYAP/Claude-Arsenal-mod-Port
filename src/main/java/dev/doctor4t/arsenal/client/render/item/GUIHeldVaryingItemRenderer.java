@@ -7,9 +7,9 @@ import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.client.util.ModelIdentifier;
 
 public abstract class GUIHeldVaryingItemRenderer extends BuiltinModelItemRenderer {
     protected final Identifier weaponId;
@@ -26,12 +26,12 @@ public abstract class GUIHeldVaryingItemRenderer extends BuiltinModelItemRendere
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices,
                        VertexConsumerProvider vertexConsumers, int light, int overlay) {
         if (this.inventoryWeaponModel == null || this.worldWeaponModel == null) {
-            // Lazy-load models after the model manager is ready
             var manager = MinecraftClient.getInstance().getBakedModelManager();
+            // Models registered via addModels() are stored with "" (empty) variant
             this.inventoryWeaponModel = manager.getModel(
-                new ModelIdentifier(Identifier.of(weaponId.getNamespace(), weaponId.getPath() + "_inventory"), "inventory"));
+                new ModelIdentifier(Identifier.of(weaponId.getNamespace(), weaponId.getPath() + "_inventory"), ""));
             this.worldWeaponModel = manager.getModel(
-                new ModelIdentifier(Identifier.of(weaponId.getNamespace(), weaponId.getPath() + "_in_hand"), "inventory"));
+                new ModelIdentifier(Identifier.of(weaponId.getNamespace(), weaponId.getPath() + "_in_hand"), ""));
         }
 
         ArsenalClient.currentMode = mode;
@@ -39,7 +39,6 @@ public abstract class GUIHeldVaryingItemRenderer extends BuiltinModelItemRendere
             case GUI, GROUND, FIXED -> this.inventoryWeaponModel;
             default -> this.worldWeaponModel;
         };
-
         renderModel(stack, mode, matrices, vertexConsumers, light, overlay, model);
         ArsenalClient.currentMode = ModelTransformationMode.NONE;
     }
