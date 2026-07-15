@@ -19,6 +19,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.tooltip.TooltipType;
+import java.util.function.Consumer;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -29,7 +31,6 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import java.util.List;
 import java.util.Locale;
 
 public class AnchorbladeItem extends MiningToolItem implements CustomHitParticleItem, CustomHitSoundItem, ArsenalWeaponItem {
@@ -68,21 +69,21 @@ public class AnchorbladeItem extends MiningToolItem implements CustomHitParticle
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
         Skin skin = Skin.fromString(ArsenalCosmetics.getSkin(stack));
         if (skin != null && skin != Skin.DEFAULT) {
-            tooltip.add(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
+            tooltip.accept(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
                 .styled(s -> s.withColor(skin.firstColor)));
             if (skin.lore != null) {
                 if (Screen.hasShiftDown()) {
                     for (String line : Text.translatable(skin.lore).getString().split("\n"))
-                        tooltip.add(Text.literal(line).styled(s -> s.withColor(Formatting.DARK_GRAY)));
+                        tooltip.accept(Text.literal(line).styled(s -> s.withColor(Formatting.DARK_GRAY)));
                 } else {
-                    tooltip.add(Text.translatable("tooltip.arsenal.hidden").styled(s -> s.withColor(Formatting.DARK_GRAY)));
+                    tooltip.accept(Text.translatable("tooltip.arsenal.hidden").styled(s -> s.withColor(Formatting.DARK_GRAY)));
                 }
             }
         }
-        super.appendTooltip(stack, world, tooltip, context);
+        super.appendTooltip(stack, context, tooltip, type);
     }
 
     @Override public void spawnHitParticles(PlayerEntity player) {
