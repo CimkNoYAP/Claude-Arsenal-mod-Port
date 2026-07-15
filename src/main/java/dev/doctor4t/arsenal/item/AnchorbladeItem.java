@@ -13,14 +13,12 @@ import dev.doctor4t.ratatouille.util.TextUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -31,10 +29,8 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 public class AnchorbladeItem extends MiningToolItem implements CustomHitParticleItem, CustomHitSoundItem, ArsenalWeaponItem {
     public AnchorbladeItem(ToolMaterial material, float attackDamage, float attackSpeed, Settings settings) {
@@ -72,21 +68,21 @@ public class AnchorbladeItem extends MiningToolItem implements CustomHitParticle
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World world, List<Text> tooltip, TooltipContext context) {
         Skin skin = Skin.fromString(ArsenalCosmetics.getSkin(stack));
         if (skin != null && skin != Skin.DEFAULT) {
-            tooltip.accept(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
+            tooltip.add(Text.literal(skin.tooltipName != null ? skin.tooltipName : TextUtils.formatValueString(skin.getName()))
                 .styled(s -> s.withColor(skin.firstColor)));
             if (skin.lore != null) {
                 if (Screen.hasShiftDown()) {
                     for (String line : Text.translatable(skin.lore).getString().split("\n"))
-                        tooltip.accept(Text.literal(line).styled(s -> s.withColor(Formatting.DARK_GRAY)));
+                        tooltip.add(Text.literal(line).styled(s -> s.withColor(Formatting.DARK_GRAY)));
                 } else {
-                    tooltip.accept(Text.translatable("tooltip.arsenal.hidden").styled(s -> s.withColor(Formatting.DARK_GRAY)));
+                    tooltip.add(Text.translatable("tooltip.arsenal.hidden").styled(s -> s.withColor(Formatting.DARK_GRAY)));
                 }
             }
         }
-        super.appendTooltip(stack, context, tooltip, type);
+        super.appendTooltip(stack, world, tooltip, context);
     }
 
     @Override public void spawnHitParticles(PlayerEntity player) {
@@ -126,36 +122,26 @@ public class AnchorbladeItem extends MiningToolItem implements CustomHitParticle
     }
 
     public enum Skin {
-        // chainTexture = assets/arsenal/textures/entity/<name>.png, referenced as full path for RenderLayer
-        DEFAULT(0xFF7E7E7E, 0xFF505050, null, null,
-            Identifier.of("arsenal", "textures/entity/chain.png")),
-        LUXINTRUS(0xFF4B0082, 0xFF2D004D, "Luxintrus", null,
-            Identifier.of("arsenal", "textures/entity/chain_luxintrus.png")),
-        CARRION(0xFFE9DFB8, 0xFF9D806E, null, null,
-            Identifier.of("arsenal", "textures/entity/chain_carrion.png")),
-        GILDED(0xFFF1BC5A, 0xFFE28634, null, null,
-            Identifier.of("arsenal", "textures/entity/chain_gilded.png")),
-        WINSWEEP(0xFF00BFFF, 0xFF0080AA, "Winsweep", null,
-            Identifier.of("arsenal", "textures/entity/chain_winsweep.png")),
-        AMBESSA(0xFFB8860B, 0xFF7A5900, "Ambessa", null,
-            Identifier.of("arsenal", "textures/entity/chain_ambessa.png")),
-        TITAN(0xFF708090, 0xFF465060, "Titan-class", null,
-            Identifier.of("arsenal", "textures/entity/chain.png")),
-        VOID(0xFF191970, 0xFF0D0D40, null, "tooltip.arsenal.anchorblade_void",
-            Identifier.of("arsenal", "textures/entity/chain.png"));
+        DEFAULT(0xFF7E7E7E, 0xFF505050, null, null, Identifier.of("arsenal","textures/entity/chain.png")),
+        LUXINTRUS(0xFF4B0082, 0xFF2D004D, "Luxintrus", null, Identifier.of("arsenal","textures/entity/chain_luxintrus.png")),
+        CARRION(0xFFE9DFB8, 0xFF9D806E, null, null, Identifier.of("arsenal","textures/entity/chain_carrion.png")),
+        GILDED(0xFFF1BC5A, 0xFFE28634, null, null, Identifier.of("arsenal","textures/entity/chain_gilded.png")),
+        WINSWEEP(0xFF00BFFF, 0xFF0080AA, "Winsweep", null, Identifier.of("arsenal","textures/entity/chain_winsweep.png")),
+        AMBESSA(0xFFB8860B, 0xFF7A5900, "Ambessa", null, Identifier.of("arsenal","textures/entity/chain_ambessa.png")),
+        TITAN(0xFF708090, 0xFF465060, "Titan-class", null, Identifier.of("arsenal","textures/entity/chain.png")),
+        VOID(0xFF191970, 0xFF0D0D40, null, "tooltip.arsenal.anchorblade_void", Identifier.of("arsenal","textures/entity/chain.png"));
 
         public final int firstColor, lastColor;
         public final @org.jetbrains.annotations.Nullable String lore, tooltipName;
         public final Identifier chainTexture;
+        public final ModelIdentifier anchorbladeEntityModel;
 
-        Skin(int fc, int lc, @org.jetbrains.annotations.Nullable String tn,
-             @org.jetbrains.annotations.Nullable String l, Identifier chainTex) {
+        Skin(int fc, int lc, @org.jetbrains.annotations.Nullable String tn, @org.jetbrains.annotations.Nullable String l, Identifier chainTex) {
             firstColor=fc; lastColor=lc; tooltipName=tn; lore=l; chainTexture=chainTex;
+            anchorbladeEntityModel = new ModelIdentifier(Identifier.of("arsenal", "anchorblade_" + name().toLowerCase(Locale.ROOT) + "_in_hand"), "");
         }
         public String getName() { return name().toLowerCase(Locale.ROOT); }
-        public static @org.jetbrains.annotations.Nullable Skin fromString(String n) {
-            for (Skin s : values()) if (s.getName().equalsIgnoreCase(n)) return s; return null;
-        }
+        public static @org.jetbrains.annotations.Nullable Skin fromString(String n) { for(Skin s:values()) if(s.getName().equalsIgnoreCase(n)) return s; return null; }
         public static Skin getNext(Skin s) { Skin[] v=values(); return v[(s.ordinal()+1)%v.length]; }
     }
 }
